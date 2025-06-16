@@ -1,0 +1,105 @@
+[
+  {
+    "name": "create_calendar_event",
+    "description": "Creates a new event in the user's Google Calendar.",
+    "method": "POST",
+    "endpoint": "https://yourdomain.com/create_event",
+    "parameters": {
+      "type": "object",
+      "required": ["user_id", "title", "start_time", "end_time"],
+      "properties": {
+        "user_id": { "type": "string", "description": "The unique user ID." },
+        "title": { "type": "string", "description": "Event title." },
+        "start_time": { "type": "string", "format": "date-time", "description": "Start time in ISO 8601 format." },
+        "end_time": { "type": "string", "format": "date-time", "description": "End time in ISO 8601 format." },
+        "attendees": { "type": "array", "items": { "type": "string", "format": "email" }, "description": "List of attendee emails." },
+        "location": { "type": "string", "description": "Event location (optional)." }
+      }
+    },
+    "returns": {
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string", "description": "ID of the created event." }
+      }
+    }
+  },
+  {
+    "name": "get_calendar_events",
+    "description": "Fetches events from the user's calendar between two times.",
+    "method": "POST",
+    "endpoint": "https://yourdomain.com/list_events",
+    "parameters": {
+      "type": "object",
+      "required": ["user_id", "start_time", "end_time"],
+      "properties": {
+        "user_id": { "type": "string", "description": "The unique user ID." },
+        "start_time": { "type": "string", "format": "date-time", "description": "Start of time range." },
+        "end_time": { "type": "string", "format": "date-time", "description": "End of time range." }
+      }
+    },
+    "returns": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "start_time": { "type": "string", "format": "date-time" },
+              "end_time": { "type": "string", "format": "date-time" },
+              "attendees": { "type": "array", "items": { "type": "string" } },
+              "location": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "update_calendar_event",
+    "description": "Updates an existing calendar event.",
+    "method": "POST",
+    "endpoint": "https://yourdomain.com/update_event",
+    "parameters": {
+      "type": "object",
+      "required": ["user_id", "event_id"],
+      "properties": {
+        "user_id": { "type": "string", "description": "The unique user ID." },
+        "event_id": { "type": "string", "description": "The ID of the event to update." },
+        "title": { "type": "string", "description": "Updated title (optional)." },
+        "start_time": { "type": "string", "format": "date-time", "description": "Updated start time (optional)." },
+        "end_time": { "type": "string", "format": "date-time", "description": "Updated end time (optional)." },
+        "attendees": { "type": "array", "items": { "type": "string", "format": "email" }, "description": "Updated list of attendee emails (optional)." },
+        "location": { "type": "string", "description": "Updated location (optional)." }
+      }
+    },
+    "returns": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "description": "Success or failure status." }
+      }
+    }
+  },
+  {
+    "name": "delete_calendar_event",
+    "description": "Deletes an event from the user's calendar.",
+    "method": "POST",
+    "endpoint": "https://yourdomain.com/delete_event",
+    "parameters": {
+      "type": "object",
+      "required": ["user_id", "event_id"],
+      "properties": {
+        "user_id": { "type": "string", "description": "The unique user ID." },
+        "event_id": { "type": "string", "description": "The ID of the event to delete." }
+      }
+    },
+    "returns": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "description": "Success or failure status." }
+      }
+    }
+  }
+]
