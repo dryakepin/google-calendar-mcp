@@ -1,14 +1,28 @@
-
 from flask import Flask, request, jsonify
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import os
+from functools import wraps
 
 app = Flask(__name__)
 
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+API_SECRET_KEY = os.getenv("API_SECRET_KEY")
 REDIRECT_URI = "https://yourdomain.com/oauth2callback"
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if "Authorization" in request.headers:
+            token = request.headers["Authorization"].split(" ")[1]
+        if not token:
+            return jsonify({"message": "Token is missing!"}), 401
+        if token != API_SECRET_KEY:
+            return jsonify({"message": "Token is invalid!"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 # Simulated secure token retrieval (replace with DB lookup in production)
 def get_user_token(user_id):
@@ -27,6 +41,7 @@ def get_calendar_service(user_id):
     return build("calendar", "v3", credentials=creds)
 
 @app.route("/create_event", methods=["POST"])
+@token_required
 def create_event():
     data = request.json
     service = get_calendar_service(data["user_id"])
@@ -47,6 +62,7 @@ def create_event():
     return jsonify({"eventId": created_event["id"]})
 
 @app.route("/list_events", methods=["POST"])
+@token_required
 def list_events():
     data = request.json
     service = get_calendar_service(data["user_id"])
@@ -68,6 +84,7 @@ def list_events():
     return jsonify({"events": events})
 
 @app.route("/update_event", methods=["POST"])
+@token_required
 def update_event():
     data = request.json
     service = get_calendar_service(data["user_id"])
@@ -90,6 +107,7 @@ def update_event():
     return jsonify({"status": "success", "eventId": updated_event["id"]})
 
 @app.route("/delete_event", methods=["POST"])
+@token_required
 def delete_event():
     data = request.json
     service = get_calendar_service(data["user_id"])
