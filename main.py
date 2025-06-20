@@ -10,6 +10,8 @@ CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 API_SECRET_KEY = os.getenv("API_SECRET_KEY")
 REDIRECT_URI = "https://yourdomain.com/oauth2callback"
+ACCESS_TOKEN = os.getenv("GOOGLE_ACCESS_TOKEN")
+REFRESH_TOKEN = os.getenv("GOOGLE_REFRESH_TOKEN")
 
 def token_required(f):
     @wraps(f)
@@ -24,17 +26,9 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# Simulated secure token retrieval (replace with DB lookup in production)
-def get_user_token(user_id):
-    return {
-        "access_token": "ya29.a0AfH6SM...",
-        "refresh_token": "1//0g..."
-    }
-
-def get_calendar_service(user_id):
-    token = get_user_token(user_id)
-    creds = Credentials(token=token["access_token"],
-                        refresh_token=token["refresh_token"],
+def get_calendar_service():
+    creds = Credentials(token=ACCESS_TOKEN,
+                        refresh_token=REFRESH_TOKEN,
                         token_uri="https://oauth2.googleapis.com/token",
                         client_id=CLIENT_ID,
                         client_secret=CLIENT_SECRET)
@@ -44,7 +38,7 @@ def get_calendar_service(user_id):
 @token_required
 def create_event():
     data = request.json
-    service = get_calendar_service(data["user_id"])
+    service = get_calendar_service()
     event = {
         "summary": data["title"],
         "location": data.get("location", ""),
@@ -65,7 +59,7 @@ def create_event():
 @token_required
 def list_events():
     data = request.json
-    service = get_calendar_service(data["user_id"])
+    service = get_calendar_service()
     events_result = service.events().list(
         calendarId="primary",
         timeMin=data["start_time"],
@@ -87,7 +81,7 @@ def list_events():
 @token_required
 def update_event():
     data = request.json
-    service = get_calendar_service(data["user_id"])
+    service = get_calendar_service()
     event = service.events().get(calendarId="primary", eventId=data["event_id"]).execute()
 
     if "title" in data:
@@ -110,7 +104,7 @@ def update_event():
 @token_required
 def delete_event():
     data = request.json
-    service = get_calendar_service(data["user_id"])
+    service = get_calendar_service()
     service.events().delete(calendarId="primary", eventId=data["event_id"]).execute()
     return jsonify({"status": "success"})
 

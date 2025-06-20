@@ -37,12 +37,16 @@ Set the following environment variables. You can create a `.env` file and use a 
 - `GOOGLE_CLIENT_ID`: Your Google Cloud project's client ID.
 - `GOOGLE_CLIENT_SECRET`: Your Google Cloud project's client secret.
 - `API_SECRET_KEY`: A secret key of your choice to use as a bearer token for authenticating API requests.
+- `GOOGLE_ACCESS_TOKEN`: Your Google API access token.
+- `GOOGLE_REFRESH_TOKEN`: Your Google API refresh token.
 
 **Example `.env` file:**
 ```
 GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 API_SECRET_KEY="your-super-secret-key"
+GOOGLE_ACCESS_TOKEN="your-google-access-token"
+GOOGLE_REFRESH_TOKEN="your-google-refresh-token"
 ```
 
 ## Running the Application
@@ -67,7 +71,6 @@ All requests must include an `Authorization` header with a bearer token.
 - **Body (JSON):**
   ```json
   {
-    "user_id": "some_user_id",
     "title": "My Awesome Event",
     "start_time": "2024-12-01T10:00:00Z",
     "end_time": "2024-12-01T12:00:00Z",
@@ -83,7 +86,6 @@ All requests must include an `Authorization` header with a bearer token.
 - **Body (JSON):**
   ```json
   {
-    "user_id": "some_user_id",
     "start_time": "2024-12-01T00:00:00Z",
     "end_time": "2024-12-31T23:59:59Z"
   }
@@ -96,7 +98,6 @@ All requests must include an `Authorization` header with a bearer token.
 - **Body (JSON):**
   ```json
   {
-    "user_id": "some_user_id",
     "event_id": "the-event-id-to-update",
     "title": "My Updated Awesome Event"
   }
@@ -109,7 +110,6 @@ All requests must include an `Authorization` header with a bearer token.
 - **Body (JSON):**
   ```json
   {
-    "user_id": "some_user_id",
     "event_id": "the-event-id-to-delete"
   }
   ``` 
